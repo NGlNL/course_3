@@ -149,3 +149,26 @@ class DBManager:
                 (f"%{keyword}%",),
             )
             return cursor.fetchall()
+
+    def check_tables_exist(self):
+        """Проверяет, существует ли таблицы 'companies' и 'vacancies' в базе данных."""
+        with self.conn.cursor() as cur:
+            cur.execute("""
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM information_schema.tables
+                    WHERE  table_schema = 'companies'
+                );
+            """)
+            companies_exists = cur.fetchone()[0]
+
+            cur.execute("""
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM information_schema.tables
+                    WHERE  table_schema = 'vacancies'
+                );
+            """)
+            vacancies_exists = cur.fetchone()[0]
+
+        return companies_exists and vacancies_exists

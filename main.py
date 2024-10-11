@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import psycopg2
+
 from config import config
 from src.api import HeadHunterAPI
 from src.db_manager import DBManager
@@ -9,6 +11,14 @@ params = config()
 
 def main():
     """Основная функция."""
+    conn = psycopg2.connect(dbname="postgres", **params)
+    conn.autocommit = True
+    cur = conn.cursor()
+
+    cur.execute(f'DROP DATABASE IF EXISTS db_hh')
+    cur.execute(f'CREATE DATABASE db_hh')
+
+    conn.close()
     db = DBManager("db_hh", params)
     if not db.check_tables_exist():
         db.create_table()
